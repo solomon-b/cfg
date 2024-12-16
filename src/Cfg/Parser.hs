@@ -183,13 +183,20 @@ instance (ValueParser a) => ValueParser (NonEmpty a) where
 -- | @since 0.0.1.0
 instance (ValueParser a) => ConfigParser (NonEmpty a)
 
--- | @since 0.0.1.0
-instance (ValueParser a) => ConfigParser (Maybe a) where
+instance (ConfigParser a) => ConfigParser (Maybe a) where
   parseConfig (Free m) =
     if m == M.empty
       then Right Nothing
-      else Left $ ExpectedValueFoundForest (Free m)
-  parseConfig (Pure v) = Just <$> note (ValueParseError v) (parseMaybe (parser @a) v)
+      else Just <$> (parseConfig @a $ Free m)
+  parseConfig (Pure v) = Left $ ExpectedKeyFoundValue "oops we dont know the expected key" v -- I'm not sure what goes in the first position, its supposed to be the expected key but we don't have that info here, maybe we just need a different error type?
+
+-- -- | @since 0.0.1.0
+-- instance (ValueParser a) => ConfigParser (Maybe a) where
+--   parseConfig (Free m) =
+--     if m == M.empty
+--       then Right Nothing
+--       else Left $ ExpectedValueFoundForest (Free m)
+--   parseConfig (Pure v) = Just <$> note (ValueParseError v) (parseMaybe (parser @a) v)
 
 -- Numeric parser helpers
 

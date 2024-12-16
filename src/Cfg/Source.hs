@@ -82,8 +82,11 @@ deriving via (Value (NonEmpty a)) instance ConfigSource (NonEmpty a)
 -- | @since 0.0.1.0
 deriving via (Value (Vector a)) instance ConfigSource (Vector a)
 
--- | @since 0.0.1.0
-deriving via (Value (Maybe a)) instance ConfigSource (Maybe a)
+instance (ConfigSource a) => ConfigSource (Maybe a) where
+  configSource = configSource @a
+
+-- -- | @since 0.0.1.0
+-- deriving via (Value (Maybe a)) instance ConfigSource (Maybe a)
 
 -- | @since 0.0.1.0
 deriving via (Value Double) instance ConfigSource Double
